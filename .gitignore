@@ -25,6 +25,7 @@ sdist/
 var/
 wheels/
 *.egg-info/
+temp_auto_push.bat
 .installed.cfg
 *.egg
 
@@ -35,7 +36,6 @@ ENV/
 
 # IDEs and Editors
 .idea/
-.vscode/
 *.swp
 *.swo
 *~
@@ -49,8 +49,8 @@ ENV/
 *.sql
 *.sqlite
 
-.pdf*
-*.pdf
+
 .history/
 .zip
 *.zip
+temp_interactive_push.bat
