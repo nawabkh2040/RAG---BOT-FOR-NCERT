@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AJS Pustak Kosh - CBSE Study Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --success: #4bb543;
+            --danger: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .chat-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 50px rgba(41, 128, 185, 0.15);
+            height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 20px 25px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .chat-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .chat-header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 400;
+            margin: 0;
+        }
+
+        /* Selection Panel */
+        .selection-panel {
+            background: white;
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .selection-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .selection-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray);
+        }
+
+        .form-select {
+            border-radius: 10px;
+            border: 1px solid var(--light-gray);
+            padding: 12px 15px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+            outline: none;
+        }
+
+        /* Messages Area */
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: #f8fafc;
+            background-image: radial-gradient(circle at 1px 1px, #e5e7eb 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 14px 18px;
+            border-radius: 14px;
+            line-height: 1.6;
+            position: relative;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 3px 10px rgba(67, 97, 238, 0.2);
+        }
+
+        .message.assistant {
+            align-self: flex-start;
+            background: white;
+            color: var(--dark);
+            border: 1px solid var(--light-gray);
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .message-content {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .message-content p {
+            margin-bottom: 10px;
+        }
+
+        .message-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message-content h1, 
+        .message-content h2, 
+        .message-content h3 {
+            color: var(--primary);
+            margin: 15px 0 10px 0;
+        }
+
+        .message-content ul,
+        .message-content ol {
+            margin: 10px 0 10px 20px;
+        }
+
+        .message-content li {
+            margin-bottom: 5px;
+        }
+
+        .message-content code {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .typing-indicator {
+            display: inline-flex;
+            gap: 6px;
+            padding: 12px 18px;
+            background: white;
+            border-radius: 18px;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border: 1px solid var(--light-gray);
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(1) { animation-delay: 0s; }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Button Group */
+        .button-group {
+            display: flex;
+            gap: 12px;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid var(--light-gray);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(67, 97, 238, 0.15);
+        }
+
+        .action-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25);
+        }
+
+        .action-button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .action-button:disabled {
+            background: var(--light-gray);
+            color: var(--gray);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none !important;
+        }
+
+        .action-button i {
+            font-size: 16px;
+        }
+
+        #chat-button {
+            background: var(--success);
+        }
+
+        #chat-button:not(:disabled):hover {
+            background: #3da836;
+            box-shadow: 0 4px 12px rgba(75, 181, 67, 0.25);
+        }
+
+        /* Chat Input */
+        .chat-input-container {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid var(--light-gray);
+            display: none;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--light-gray);
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+
+        #chat-input {
+            flex: 1;
+            min-height: 50px;
+            max-height: 150px;
+            padding: 14px 50px 14px 16px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            resize: none;
+            outline: none;
+            overflow-y: auto;
+            background: transparent;
+        }
+
+        #chat-input:empty:before {
+            content: attr(placeholder);
+            color: var(--gray);
+            pointer-events: none;
+        }
+
+        .send-button {
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .send-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .send-button:active {
+            transform: translateY(0);
+        }
+
+        /* Welcome Message */
+        .welcome-message {
+            text-align: center;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+
+        .welcome-message h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .welcome-message p {
+            color: var(--gray);
+            margin-bottom: 10px;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chat-container {
+                margin: 0;
+                height: 100vh;
+                border-radius: 0;
+            }
+            
+            .selection-panel {
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px 15px;
+            }
+            
+            .selection-group {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            
+            .message {
+                max-width: 90%;
+                padding: 12px 16px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+                padding: 12px;
+            }
+            
+            .action-button {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            .welcome-message {
+                margin: 20px 15px;
+                padding: 20px;
+            }
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Loading dots */
+        @keyframes blink {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        .loading-dots span {
+            animation: blink 1.4s infinite;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- Header -->
+        <div class="chat-header">
+            <h1><i class="fas fa-book-open"></i> AJS Pustak Kosh</h1>
+            <p class="subtitle">Your Personal AI-Powered Study Assistant</p>
+        </div>
+
+        <!-- Selection Panel -->
+        <div class="selection-panel">
+            <div class="selection-group">
+                <label class="selection-label">Class</label>
+                <select class="form-select" id="class-select">
+                    <option value="" selected disabled>Select Class</option>
+                    <option value="8">Class 8</option>
+                    <option value="9">Class 9</option>
+                    <option value="10">Class 10</option>
+                </select>
+            </div>
+
+            <div class="selection-group">
+                <label class="selection-label">Subject</label>
+                <select class="form-select" id="subject-select" disabled>
+                    <option value="" selected disabled>Select Subject</option>
+                    <option value="science">Science</option>
+                    <option value="social_science">Social Science</option>
+                    <option value="english">English</option>
+                </select>
+            </div>
+
+            <div class="selection-group">
+                <label class="selection-label">Chapter</label>
+                <select class="form-select" id="chapter-select" disabled>
+                    <option value="" selected disabled>Select Chapter</option>
+                    <!-- Chapters will be populated dynamically -->
+                </select>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="messages">
+            <div class="welcome-message">
+                <h3><i class="fas fa-graduation-cap"></i> Welcome to AJS Pustak Kosh!</h3>
+                <p>Select your class, subject, and chapter to get started with your personalized learning experience.</p>
+                <p>I can help you with detailed notes, explanations, practice questions, and exam preparation tips.</p>
+                <div style="margin-top: 20px; color: var(--primary);">
+                    <i class="fas fa-lightbulb"></i> <small>Tip: Use the buttons below to quickly get notes or start a conversation</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+            <button id="give-button" class="action-button" disabled>
+                <i class="fas fa-graduation-cap"></i> Get Chapter Notes
+            </button>
+            <button id="chat-button" class="action-button" disabled>
+                <i class="fas fa-comments"></i> Ask Questions
+            </button>
+        </div>
+
+        <!-- Chat Input (initially hidden) -->
+        <div class="chat-input-container" id="chat-input-container">
+            <div class="input-wrapper">
+                <div id="chat-input" contenteditable="true" placeholder="Type your question here..."></div>
+                <button class="send-button" id="send-button" title="Send message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const messages = document.getElementById('messages');
+        const classSelect = document.getElementById('class-select');
+        const subjectSelect = document.getElementById('subject-select');
+        const chapterSelect = document.getElementById('chapter-select');
+        const giveButton = document.getElementById('give-button');
+        const chatButton = document.getElementById('chat-button');
+        const chatInputContainer = document.getElementById('chat-input-container');
+        const chatInput = document.getElementById('chat-input');
+        const sendButton = document.getElementById('send-button');
+
+        // Chapters data
+        const chapters = {
+            '8': {
+                'science': ['1: Crop Production and Management', '2: Microorganisms: Friend and Foe', '3: Synthetic Fibres and Plastics', '4: Materials: Metals and Non-Metals'],
+                'social_science': ['1: How, When and Where', '2: From Trade to Territory', '3: Ruling the Countryside', '4: Tribals, Dikus and the Vision of a Golden Age'],
+                'english': ['1: The Best Christmas Present in the World', '2: The Tsunami', '3: Glimpses of the Past', '4: Bepin Choudhury\'s Lapse of Memory']
+            },
+            '9': {
+                'science': ['1: Matter in Our Surroundings', '2: Is Matter Around Us Pure', '3: Atoms and Molecules', '4: Structure of the Atom'],
+                'social_science': ['1: The French Revolution', '2: Socialism in Europe and the Russian Revolution', '3: Nazism and the Rise of Hitler', '4: Forest Society and Colonialism'],
+                'english': ['1: The Fun They Had', '2: The Sound of Music', '3: The Little Girl', '4: A Truly Beautiful Mind']
+            },
+            '10': {
+                'science': ['1: Chemical Reactions and Equations', '2: Acids, Bases and Salts', '3: Metals and Non-metals', '4: Carbon and its Compounds'],
+                'social_science': ['1: The Rise of Nationalism in Europe', '2: Nationalism in India', '3: The Making of a Global World', '4: The Age of Industrialisation'],
+                'english': ['1: A Letter to God', '2: Nelson Mandela: Long Walk to Freedom', '3: Two Stories About Flying', '4: From the Diary of Anne Frank']
+            }
+        };
+
+        // Update chapter options based on class and subject
+        function updateChapters() {
+            const selectedClass = classSelect.value;
+            const selectedSubject = subjectSelect.value;
+
+            // Clear existing options
+            chapterSelect.innerHTML = '<option value="" selected disabled>Select Chapter</option>';
+            chapterSelect.disabled = true;
+
+            if (selectedClass && selectedSubject) {
+                // Add chapter options
+                const chapterList = chapters[selectedClass][selectedSubject] || [];
+                chapterList.forEach((chapter, index) => {
+                    const option = document.createElement('option');
+                    option.value = index + 1;
+                    option.textContent = chapter;
+                    chapterSelect.appendChild(option);
+                });
+                
+                // Enable chapter select
+                chapterSelect.disabled = false;
+            }
+
+            // Update button states
+            updateButtonStates();
+        }
+
+        // Update button states based on selections
+        function updateButtonStates() {
+            const isFormComplete = classSelect.value && subjectSelect.value && chapterSelect.value;
+            giveButton.disabled = !isFormComplete;
+            chatButton.disabled = !isFormComplete;
+        }
+
+        // Append message to chat
+        function appendMessage(text, role) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = markdownToHtml(text);
+            
+            messageDiv.appendChild(contentDiv);
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Markdown to HTML converter
+        function markdownToHtml(text) {
+            if (!text) return '';
+            
+            // Simple markdown to HTML conversion
+            let html = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
+                .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>') // Heading 3
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>') // Heading 2
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>') // Heading 1
+                .replace(/\n/g, '<br>'); // Line breaks
+            
+            // Convert numbered lists
+            html = html.replace(/^\d+\.\s+(.*$)/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)/g, '<ol>$1</ol>');
+            
+            // Convert bullet points
+            html = html.replace(/^-\s+(.*$)/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>)(?!.*<li>)/gs, '<ul>$1</ul>');
+            
+            return html;
+        }
+
+        // Show typing indicator
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message assistant';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            messages.appendChild(typingDiv);
+            messages.scrollTop = messages.scrollHeight;
+            return typingDiv;
+        }
+
+        // Remove typing indicator
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        // Handle API call to chat endpoint
+        async function sendChatMessage(message, isInitialChat = false) {
+            showTypingIndicator();
+            
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        class: classSelect.value,
+                        subject: subjectSelect.value,
+                        chapter: chapterSelect.value,
+                        is_initial_chat: isInitialChat
+                    })
+                });
+                
+                const data = await response.json();
+                removeTypingIndicator();
+                
+                if (data.reply) {
+                    appendMessage(data.reply, 'assistant');
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('Error:', error);
+                removeTypingIndicator();
+                appendMessage('Sorry, there was an error processing your request. Please try again.', 'assistant');
+                return { error: error.message };
+            }
+        }
+
+        // Event Listeners
+        classSelect.addEventListener('change', () => {
+            subjectSelect.disabled = !classSelect.value;
+            if (!classSelect.value) {
+                subjectSelect.value = '';
+                chapterSelect.innerHTML = '<option value="" selected disabled>Select Chapter</option>';
+                chapterSelect.disabled = true;
+            }
+            updateButtonStates();
+        });
+
+        subjectSelect.addEventListener('change', updateChapters);
+        chapterSelect.addEventListener('change', updateButtonStates);
+
+        // Give Me Notes button click handler
+        giveButton.addEventListener('click', async () => {
+            const className = classSelect.options[classSelect.selectedIndex].text;
+            const subjectName = subjectSelect.options[subjectSelect.selectedIndex].text;
+            const chapterName = chapterSelect.options[chapterSelect.selectedIndex].text;
+            
+            // Disable buttons during processing
+            giveButton.disabled = true;
+            chatButton.disabled = true;
+            giveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            
+            // Clear previous messages
+            messages.innerHTML = '';
+            
+            // Show welcome message
+            appendMessage(`Generating comprehensive notes for ${className} - ${subjectName} - ${chapterName}. Please wait...`, 'assistant');
+            
+            // Send initial message
+            const message = `Provide detailed and comprehensive notes for ${className} - ${subjectName} - ${chapterName}. Include key concepts, definitions, examples, important points, and any relevant diagrams or formulas. Format the response with proper headings and bullet points for better readability.`;
+            await sendChatMessage(message, true);
+            
+            // Re-enable buttons
+            giveButton.disabled = false;
+            chatButton.disabled = false;
+            giveButton.innerHTML = '<i class="fas fa-graduation-cap"></i> Get Chapter Notes';
+            
+            // Show chat input after generating notes
+            chatInputContainer.style.display = 'block';
+            chatInput.focus();
+        });
+
+        // Chat About This button click handler
+        chatButton.addEventListener('click', () => {
+            const className = classSelect.options[classSelect.selectedIndex].text;
+            const subjectName = subjectSelect.options[subjectSelect.selectedIndex].text;
+            const chapterName = chapterSelect.options[chapterSelect.selectedIndex].text;
+            
+            // Clear previous messages
+            messages.innerHTML = '';
+            
+            // Show welcome message
+            appendMessage(`I'm here to help you with ${className} - ${subjectName} - ${chapterName}. What would you like to know? You can ask me about concepts, explanations, or request practice questions.`, 'assistant');
+            
+            // Show chat input
+            chatInputContainer.style.display = 'block';
+            chatInput.focus();
+            
+            // Scroll to bottom
+            messages.scrollTop = messages.scrollHeight;
+        });
+
+        // Send message when clicking send button
+        sendButton.addEventListener('click', async () => {
+            const message = chatInput.textContent.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            appendMessage(message, 'user');
+            chatInput.textContent = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Send message to server
+            await sendChatMessage(message);
+            
+            // Scroll to bottom
+            messages.scrollTop = messages.scrollHeight;
+        });
+
+        // Handle Enter key in chat input
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendButton.click();
+            }
+        });
+
+        // Auto-resize textarea
+        chatInput.addEventListener('input', () => {
+            chatInput.style.height = 'auto';
+            chatInput.style.height = (chatInput.scrollHeight) + 'px';
+        });
+
+        // Initialize
+        updateButtonStates();
+    </script>
+</body>
+</html>

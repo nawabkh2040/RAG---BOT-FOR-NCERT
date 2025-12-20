@@ -1,0 +1,32 @@
+# RAG backend dependencies for CBSE Study Assistant (Option B: Gemini + open-source stack)
+# Core RAG / retrieval packages
+langchain
+chromadb
+
+# PDF / document processing
+pypdf
+pdfminer.six
+
+# Embeddings / vector models
+sentence-transformers
+faiss-cpu
+
+# Transformer utilities and model hubs
+transformers
+huggingface-hub
+
+# Google Gemini (requires Google Cloud / Generative AI API credentials)
+google-generativeai
+google-auth
+
+# Web framework
+flask
+
+# Optional: langgraph (user requested)
+langgraph
+
+# Web / service
+fastapi
+uvicorn[standard]
+python-dotenv
+google-generativeai
