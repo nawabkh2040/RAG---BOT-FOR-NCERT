@@ -35,7 +35,6 @@ ENV/
 
 # IDEs and Editors
 .idea/
-.vscode/
 *.swp
 *.swo
 *~
@@ -49,8 +48,7 @@ ENV/
 *.sql
 *.sqlite
 
-.pdf*
-*.pdf
+
 .history/
 .zip
 *.zip
